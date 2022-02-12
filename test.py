@@ -671,13 +671,14 @@ while True:
         break
         print('选项错误，退出游戏')
 
-"""
+
 # 字符串截取
 a = 'hello world'
 print(a[0:6])  # 截取第一个到第六个字符：hello （空格也算）
 print(a[2:-2])  # 截取第三个到倒数第三个字符：hello wor
 print(a[0])  # 截取第一个字符：h
 print(a[1:])  # 截取第二个后的全部字符：ello world
+
 
 # 列表创建
 list1 = ['如果可以作弊', '我会想你念你', 1, 2, 3]
@@ -686,14 +687,33 @@ list2 = ['我', '曾将', '青春', '翻涌', '成', '她']
 print(list2[1])  # 曾将
 print(list2[-1])  # 成
 
-# 列表截取
+# 列表截取(切片)
 nums = [10, 20, 30, 40, 50, 60, 70, 80]
 print(nums[2:7])  # 30,40,50,60,70
 print(nums[1:-2])  # 20,30,40,50,60
 
-# 列表修改
+# 列表长度
+nums = [10, 20, 30, 40, 50, 60, 70, 80]
+print('列表长度为： ', len(nums))
+# 练习：在列表中保存5个名字，通过索引获取每个名字。
+names = ['小a', '小b', '小c', '小d', '小e']
+print(names[0])
+print(names[1])
+print(names[2])
+print(names[-2])
+print(names[-1])
+
+# 列表单个元素修改
 list3 = ['如果可以作弊', '我会想你念你', 1, 2, 3]
 list3[2] = '到最后的荼蘼'
+print(list3)
+# 列表切片修改
+list3 = ['如果可以作弊', '我会想你念你', 1, 2, 3]
+list3[2:] = ['到最后的荼蘼','如果回忆容易', '我会想你念你']
+print(list3)
+# 设置步长修改列表
+list3 = [1, '如果可以作弊', 2, '我会想你念你', 3]
+list3[::2] = ['到最后的荼蘼', '如果回忆容易', '我会想你念你']
 print(list3)
 
 # 列表添加和删除
@@ -701,11 +721,97 @@ list3 = ['如果可以作弊', '我会想你念你', 1, 2, 3]
 list3.append('到最后的荼蘼')
 del list3[3]
 print(list3)
+# 通过切片删除列表元素
+casual_list = [1, 123, 213, 12321, 3242213, 223, 123, 423, 324, 32133]
+del casual_list[0:2]
+print(casual_list)
+del casual_list[::2]
+print(casual_list)
 
-# 列表拼接
+# 列表拼接和重复
 squares = [1, 2, 3]
 squares += [7, 8, 9]
 print(squares)
+print(squares * 3)
+
+# 列表函数&方法
+# 函数
+# in & not in
+casual_list = [1, 123, 213, 12321, 3242213]
+print(123 in casual_list)
+print('hello' not in casual_list)
+# len() & min() & max()
+casual_list = [1, 123, 213, 12321, 3242213]
+print(len(casual_list))
+print(min(casual_list))
+print(max(casual_list))
+# 方法
+# index（）
+casual_list = [1, 123, 213, 123, 3242213]
+print(casual_list.index(213))
+print(casual_list.index(213, 1))  # 第二个参数表示查找的起始位置
+print(casual_list.index(213, 1, 3))  # 第三个参数表示查找的终点位置
+
+# count()
+casual_list = [1, 123, 213, 123, 3242213]
+print(casual_list.count(123))
+print(casual_list.count(213))
+print(casual_list.count(111))
+
+# 列表的方法
+# insert
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精']
+print('原列表：', stus)
+stus.insert(2, '唐僧')
+print('新列表：', stus)
+
+# extend
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精']
+print('原列表：', stus)
+stus.extend(['dddd', '唐僧'])
+print('新列表：', stus)
+
+# clear
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精']
+stus.clear()
+print(stus)
+
+# pop
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精']
+result = stus.pop(2)
+print('返回值：', result)
+
+# remove
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精', '猪八戒']
+stus.remove('猪八戒')
+print(stus)
+
+# reverse
+casual_list = [1, 123, 213, 12321, 3242213]
+casual_list.reverse()
+print(casual_list)
+
+# sort
+casual_list = [1, 123, 213, 12321, 3242213]
+casual_list.sort()
+print(casual_list)
+casual_list.sort(reverse=True)
+print(casual_list)
+
+
+# 遍历列表
+# while循环
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精', '猪八戒']
+i = 0
+while i < 4:
+    print(stus[i])
+    i += 1
+
+# for循环
+stus = ['孙悟空', '猪八戒', '牛魔王', '白骨精', '猪八戒']
+for s in stus:
+    print(s)
+
 
 # 嵌套列表
 a = ['a', 'b', 'c']
@@ -716,6 +822,77 @@ print(list)
 print(list[0])  # ['a', 'b', 'c']
 # 索引子表的元素
 print(list[0][1])  # b
+
+
+# 列表练习
+# EMS（Employee Manager System 员工管理系统）
+# 显示系统欢迎信息
+print('-'*20, '欢迎进入员工管理系统', '-'*20)
+# 创建列表,保存员工信息，字符串形式
+emps = ['\t孙悟空\t16', '\t猪八戒\t15']
+# 创建死循环
+while True:
+    # 显示用户选项
+    print('-' * 60)
+    print('请选择你要进行的操作：')
+    print('\t1.查询员工\t')
+    print('\t2.添加员工\t')
+    print('\t3.删除员工\t')
+    print('\t4.退出\t')
+    user_code = input('请选择1-4：\n')
+    print('-'*60)
+    if user_code == '1':  # 查询员工
+        # 创建变量
+        print('\t序号\t\t姓名\t\t年龄')
+        # 创建变量表示序号
+        n = 1
+        for emp in emps:
+            print(f'\t{n}\t{emp}')
+            n += 1
+    elif user_code == '2':  # 添加员工
+        # 获取员工信息
+        emp_name = input('请输入员工姓名:')
+        emp_age = input('请输入员工年龄:')
+        emp = f'\t{emp_name}\t\t{emp_age}'
+        print('-' * 60)
+        # 提示
+        print('员工：', emp, '将被添加到系统中')
+        user_confirm = input('是否继续添加[Y/N]：')
+        print('-' * 60)
+        if user_confirm == 'Y':
+            emps.append(emp)
+            print('插入成功')
+        elif user_confirm == 'N':
+            print('取消成功')
+            pass
+    # 删除员工
+    elif user_code == '3':
+        del_num = int(input('请输入删除员工序号：'))
+        if 0 < del_num <= len(emps):
+            del_index = del_num - 1
+        else:
+            print('输入有误')
+        print('员工：', emps[del_index], '将被删除')
+        print('\t序号\t姓名\t\t年龄')
+        print(f'\t{del_num}\t{emps[del_index]}')
+        user_confirm = input('是否继续删除[Y/N]：')
+        if user_confirm == 'Y':
+            del emps[del_index]
+            print('删除成功')
+        elif user_confirm == 'N':
+            print('操作取消')
+            pass
+    elif user_code == '4':
+        input('欢迎使用，点击回车键退出')
+        break
+    else:
+        print('您的输入有误请重新输入')
+
+# range
+
+
+
+
 
 # 创建元组
 tuple = ('Google', 'Runoob', 1997, 2000)
@@ -734,6 +911,24 @@ tup1 = (50)
 tup2 = (50,)
 print(type(tup1))
 print(type(tup2))
+
+# 元组解包
+# 利用解包交换变量的值
+tup1 = (10, 20, 30, 40)
+a, b, c, d = tup1
+print(a, b, c, d)
+a, b = b, a
+print(a, b)
+# 利用解包分配元素给相对位置的变量
+tup1 = (10, 20, 30, 40, 50)
+a, b, *c = tup1
+print(a, b, c)
+a, *b, c = tup1
+print(a, b, c)
+*a, b, c = tup1
+print(a, b, c)
+
+
 
 # 元组索引
 tup1 = (10, 20, 30, 40, 50, 60)
@@ -799,3 +994,725 @@ print(tinydict)
 # 字典键不允许用可变的数据类型
 tinydict = {[a]: 1, 'b': 2, 'c': 3}
 print(tinydict)
+
+# rang
+r = range(5)  # 生成一个序列【0，1，2，3，4】
+s = range(3, 10, 2)
+print(list(r))
+print(list(s))
+# 通过range可以创建一个指定次数的for循环
+# for循环除了创建方式以外，其余和while一样，包括break、continue都可以在for循环中使用。
+for i in range(30):
+    print(i)
+
+
+# 可变对象
+a = [1, 2, 3]
+print('修改前：', a, id(a))
+# 通过索引改变对象[1,2,3]的值,不会改变变量所指向的对象
+a[0] = 10
+print('修改后：', a, id(a))
+
+# 修改对象的值时，如果有其他变量也指向该对象，则修改也会在其他的变量中体现
+a = [1, 2, 3]
+print('修改前：', a, id(a))
+b = a
+a[0] = 10
+print('修改后：', a, id(a))
+print('修改后：', b, id(b))
+
+
+# 为变量重新赋值，改变变量所指向的对象
+a = [1, 2, 3]
+print('修改前：', a, id(a))
+a = [4, 5, 6]
+print('修改后：', a, id(a))
+
+# dict函数创建字典
+d = dict(name='孙悟空', age='8')
+print(d, type(d))
+# 双值子序列转换为字典
+e = dict([('name', '孙悟饭'), ('age', 18)])
+print(e, type(e))
+
+# 获取字典的长度
+d = dict(name='孙悟空', age='8')
+print(len(d))
+
+# in & not in
+d = {'name': '孙悟空', 'age': 18}
+print('name' in d)
+
+# get(key,[default])获取指定键的值
+e = dict([('name', '孙悟饭'), ('age', 18)])
+print(d.get('name'))
+print(d.get('abc'))
+print(d.get('hello', '返回默认值'))
+print(d)
+
+
+# setdefault(key,[, default])添加字典的值
+d = {'name': '孙悟空', 'age': 18}
+result = d.setdefault('name')
+result1 = d.setdefault('abc')
+result2 = d.setdefault('address', '花果山')
+print(result, result1, result2)
+print(d)
+
+# update()
+d = {'a': 1, 'b': 2, 'c': 3}
+d2 = {'d': 4, 'e': 5, 'f': 6, 'a': 8}
+d.update(d2)
+print(d)
+
+# popitem删除字典的键值对
+d = {'a': 1, 'b': 2, 'c': 3}
+result = d.popitem()
+print(result)
+print(d)
+e = {}
+print(e.popitem())
+
+# pop删除字典的键值对
+d = {'a': 1, 'b': 2, 'c': 3}
+result1 = d.pop('c')
+result2 = d.pop('e', '返回默认值')
+print('result1=', result1)
+print('result2= ', result2)
+print(d)
+
+# copy()字典浅复制
+d = {'a': 1, 'b': 2, 'c': 3, 'e': {'name': '孙悟空', 'age': 18}}
+d2 = d.copy()
+print(d, id(d))
+print(d2, id(d2))
+d2['e']['name'] = '猪八戒'  # 修改可变对象时，原对象也会改变
+print(d, id(d))
+print(d2, id(d2))
+
+# 字典遍历
+# keys（）
+d = {'name': '孙悟空', 'age': 18, 'address': '花果山'}
+for k in d.keys():
+    print(k)
+# values()
+d = {'name': '孙悟空', 'age': 18, 'address': '花果山'}
+for v in d.values():
+    print(v)
+# items()
+d = {'name': '孙悟空', 'age': 18, 'address': '花果山'}
+for k, v in d.items():
+    print(k, '=', v)
+
+# 创建集合
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+print(s)
+p = {1, 1, 1, 1, 1, 2, 2, 2, 10, 20, 30}
+print(p)
+q = set('hello')  # 字符串转换为集合
+t = set({'a': 1, 'b': 2, 'c': 3})  # 字典转换为集合
+print(q)
+print(t)
+
+# in & not in
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+print(1 in s)
+print('hello' not in s)
+
+# len()
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+print(len(s))
+
+
+# 集合添加元素
+# add（）
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+s.add(10)
+print(s)
+
+# update（）
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+s2 = set('hello')
+print(s)
+s.update((10, 20, 30))
+print(s)
+s.update({'a': 1, 'b': 2, 'c': 3})  # update字典类型只会插入键
+print(s)
+
+# 删除集合元素
+# pop（）
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+result = s.pop()
+print(result, s)
+
+# remove()
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+s.remove(7)
+print(s)
+
+# clear()
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+s.clear()
+print(s)
+
+# copy()
+s = {1, 2, 3, 4, 5, 6, 7, 8}
+s2 = s.copy()
+print(s, id(s))
+print(s2, id(s2))
+
+# 集合的运算
+s1 = {1, 2, 3, 4, 5}
+s2 = {3, 4, 5, 6, 7, 8, 9}
+# & 交集运算
+result1 = s1 & s2
+print(result1)
+# | 并集运算
+s1 = {1, 2, 3, 4, 5}
+s2 = {3, 4, 5, 6, 7, 8, 9}
+result2 = s1 | s2
+print(result2)
+# - 差集运算
+s1 = {1, 2, 3, 4, 5}
+s2 = {3, 4, 5, 6, 7, 8, 9}
+result3 = s1 - s2
+print(result3)
+# ^ 异或集运算
+s1 = {1, 2, 3, 4, 5}
+s2 = {3, 4, 5, 6, 7, 8, 9}
+result4 = s1 ^ s2
+print(result4)
+# <= 检查一个集合是否为另一个的子集
+s1 = {1, 2, 3}
+s2 = {1, 2, 3, 4, 5, 6}
+result = s1 <= s2
+print(result)
+# < 检查一个集合是否为另一个的真子集
+s1 = {1, 2, 3}
+s2 = {1, 2, 3, 4, 5, 6}
+result = s1 <= s2
+print(result)
+# >= 检查一个集合是否为另一个的超集
+s1 = {1, 2, 3}
+s2 = {1, 2, 3}
+s3 = {123, 213}
+result1 = s1 >= s2
+result2 = s1 >= s3
+print('result1=', result1)
+print('result2=', result2)
+# > 检查一个集合是否为另一个的真超集
+s1 = {1, 2, 3}
+s2 = {1, 2, 3}
+s3 = {1, 2}
+result1 = s1 > s2
+result2 = s1 > s3
+print('result1=', result1)
+print('result2=', result2)
+
+
+
+# 函数
+# 定义函数
+def fun():
+    print('这是我的第一个函数')
+    print('hello')
+    print('world')
+
+
+fun()
+print(type(fun))
+print(id(fun))
+
+
+# 函数的参数
+def add_sum(a, b):  # 形参相当于在函数内写上：a = None b = None
+    print(a, '+', b, '=', a+b)
+
+
+add_sum(10, 20)
+add_sum(123, 233)
+add_sum(12, 21)
+
+
+# 定义函数练习1：定义一个函数，可以用来求任意三个数的乘积
+def product(a, b, c):
+    print(a, '*', b, '*', c, '=', a*b*c)
+
+
+product(10, 20, 30)
+product(123, 345, 789)
+
+
+# 定义函数练习2：定义一个函数，可以根据不同的用户名显示不同的欢迎信息
+def welcome(a):
+    print('欢迎', a, '光临')
+
+
+welcome('孙悟空')
+
+# 实参的类型
+
+
+def fn():
+    print('这是我的第一个函数')
+    print('hello')
+    print('world')
+
+
+def fn2(a):
+    print('a = ', a)
+
+
+b = 123
+c = True
+d = 'hello'
+e = [1, 2, 3]
+fn2(b)
+fn2(c)
+fn2(d)
+fn2(e)
+fn2(fn)
+
+
+# 形参重新赋值对其他变量不产生影响
+def fn3(a):
+    a = 20
+    print('a = ', a)
+
+
+c = 10
+fn3(c)
+print('c = ', c)
+
+
+# 修改形参指向的对象会对其他变量产生影响
+def fn4(a):
+    a[0] = 10
+    print('a = ', a, id(a))
+
+
+c = [1, 2, 3]
+fn4(c)
+print('c = ', c, id(c))
+
+# 不定长参数
+
+
+def fn(*a):
+    print('a= ', a, type(a))
+
+
+fn(123, 213, 323)
+
+# 定义一个函数可以令任意数字相加
+
+
+def fun(*nums):
+    result = 0
+    for n in nums:
+        result += n
+    print('sum=', result)
+
+
+fun(123456, 123, 123123, 123123, 12)
+
+# 可变参数的使用
+
+
+def fn(a, b, *c):
+    print('a= ', a)
+    print('b= ', b)
+    print('c= ', c)
+
+
+fn(1, 2, 3, 4, 5)
+
+
+# 可变参数后的参数必须关键字传参
+def fn2(a, *b, c):
+    print('a= ', a)
+    print('b= ', b)
+    print('c= ', c)
+
+
+fn2(1, 2, 3, 4, 5, c=6)
+
+
+# 全部参数以关键字传参
+def fn2(*, a, b, c):
+    print('a= ', a)
+    print('b= ', b)
+    print('c= ', c)
+
+
+fn2(a=1, b=2, c=3)
+
+
+# **形参
+def fn2(b, c, **a):
+    print('a= ', a, type(a))
+    print('b= ', b)
+    print('c= ', c)
+
+
+fn2(b=2, c=3, d=1, e=5, f=6)
+
+
+# 参数解包
+# 对序列解包
+def fn2(a, b, c):
+    print('a= ', a)
+    print('b= ', b)
+    print('c= ', c)
+
+
+# 创建一个元组或者列表
+t = (1, 2, 3)
+# 传统方式传参： fn2(t[0], t[1], t[2])
+fn2(*t)
+
+
+# 对字典解包
+def fn2(a, b, c):
+    print('a= ', a)
+    print('b= ', b)
+    print('c= ', c)
+
+
+# 创建一个字典
+t = {'a': 1, 'b': 2, 'c': 3}
+# 传统方式传参： fn2(t[0], t[1], t[2])
+fn2(**t)
+
+
+# 返回值
+def fn():
+    def fn2():
+        print('hello world')
+    return fn2()
+    # return 100
+    # return 'hello'
+    # return [1,2,3]
+
+
+fn()
+print(fn())
+
+
+def fun(*nums):
+    result = 0
+    for n in nums:
+        result += n
+    return result
+
+
+r = fun(123, 123)
+print(r)
+
+
+# 函数后加不加（）的区别
+def fn5():
+    return 10
+
+
+print(fn5)
+print(fn5())
+
+
+# 文档字符串
+# help()函数
+help(print)
+
+
+# 文档字符串
+def fn():
+    '''
+    这是一个文档字符串的示例
+    函数的作用:.....
+    函数的参数：
+        a:作用，类型，默认值......
+        b:作用，类型，默认值......
+        c:作用，类型，默认值......
+    '''
+    return 10
+
+
+# 说明参数和返回值类型
+def fn(a: int, b: bool, c: str = 10) -> int:
+    # 此处说明参数a为int，b为bool，c为str，返回值为int
+    return 10
+
+
+# 作用域
+# 全局作用域
+b = 20
+
+
+def fn():
+    a = 10
+    print('函数内a：', a)
+    print('函数外b:', b)
+
+
+fn()
+
+
+# 函数作用域
+a = 20
+
+
+def fn():
+    a = 10
+    print('函数内a：', a)
+
+
+fn()
+print('函数外a：', a)
+
+# 变量的查找
+
+a = 10
+
+
+def fn():
+    global a
+    a = 20
+    print('修改后的a:', a)
+
+
+fn()
+print('全局变量的a：', a)
+
+
+# 命名空间
+scope = locals()  # 获得当前命名空间
+print(scope, type(scope))  # 返回一个字典
+scope['c'] = 10  # 向字典中添加一个key-value相当于创建一个全局变量（一般不建议这么做）
+print('c=', c)
+
+
+def fn():
+    a = 10
+    scope = locals()  # 获得当前函数命名空间
+    print(scope, type(scope))  # 返回一个字典
+    scope['b'] = 20  # 通过操作函数的命名空间（一般不建议这么做）
+    print('b = ', b)
+
+
+fn()
+
+
+# globals（）查看全局命名空间
+b = 10
+
+
+def fn():
+    global_scope = globals()  # 获得全局命名空间
+    print(global_scope)  # 查看全局命名空间
+    global_scope['b'] = 20  # 修改全局变量
+    print('b = ', b)
+
+
+fn()
+print('函数外b：', b)
+"""
+# 递归
+# 创建一个函数求10！
+
+
+def factorial():
+    n = 10
+    for i in range(1, 10):
+        n = n * i
+    print(n)
+
+
+factorial()
+
+
+# 创建一个函数求任意数的阶乘
+def factorial2(n):
+    '''
+    这是一个求任意数阶乘的函数
+    参数 n：求阶乘的数字
+    '''
+    # 创建一个变量保存结果
+    result = n
+    for i in range(1, n):
+        result = result * i
+        return result
+    print(n, '的阶乘为：', result)
+
+
+factorial2(5)
+
+# 递归例子：求任意数的阶乘
+# 10! = 10 *9!
+# 9! = 9 * 8!
+# 8! = 8 *7!
+...
+# 1!= 1
+
+
+def factorial2(n):
+    '''
+    这是一个求任意数阶乘的函数
+    参数 n：求阶乘的数字
+    '''
+    # 基线条件：判断n是否为1，如果为1则不再继续
+    if n == 1:
+        # 1的阶乘就是1，直接返回1
+        return 1
+    # 递归条件 return n*(n-1)
+    return n * factorial2(n-1)
+
+
+print(factorial2(10))
+
+# 递归练习
+# 练习1：创建一个函数power来求任意数字做幂运算 n ** i
+
+
+def power(n, i):
+    '''
+    这是一个power函数，为任意函数做幂运算
+    参数 n：幂运算数字
+    i:幂运算次数
+    '''
+    # 基线条件：1次幂
+    if i == 1:
+        return n
+    # 递归条件
+    return n * power(n, i-1)
+
+
+# print(n, '的', i, '次幂为：', power(10, 3))
+print(power(10, 3))
+
+
+# 练习2:创建一个函数，用来检查一个任意字符串是否是回文字符串，如果是返回True，否则返回False
+def pal(pal_str):
+    '''
+    该函数用来检查字符串是否为回文字符串，是返回True，否返回False
+    '''
+    # abcdedcba
+    # 先判断第一个和最后一个字符是否相等，如果相等判断bcdedcb是否回文
+    # 判断bcdedcb是否回文
+    # 判断cdedc是否回文
+    # 判断ded是否回文
+    # 判断e是否回文
+    # 基线条件：字符串的长度小于2是回文字符串
+    #         字符串第一个不等于最后一个不是回文字符串
+    if len(pal_str) < 2:
+        return True
+    elif pal_str[0] != pal_str[-1]:
+        return False
+    # 递归条件
+    return pal(pal_str[1:-1])
+
+
+print(pal('abcdedcba'))
+
+
+# 高阶函数
+l1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+l2 = []
+
+
+def fn2(i):
+    if i % 2 == 0:
+        return True
+    return False
+
+
+def fn(func, lst):
+    '''
+    该函数用于将指定的元素输出到新的列表中
+    参数 lst：用来保存新表
+
+
+    '''
+    for n in lst:
+        if func(n):
+            l2.append(n)
+    return l2
+
+
+print(fn(fn2, l1))
+
+
+# 匿名函数
+# filter
+l1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+l2 = []
+
+
+def fn2(i):
+    if i % 2 == 0:
+        return True
+    return False
+
+
+def fn(func, lst):
+    '''
+    该函数用于将指定的元素输出到新的列表中
+    参数 lst：用来保存新表
+
+
+    '''
+    for n in lst:
+        if func(n):
+            l2.append(n)
+    return l2
+
+
+r = filter(fn2, l1)
+print(list(r))
+
+# def fn(a, b):
+# 	return a+b
+# 等价于:
+lambda a, b: a + b
+print(lambda a, b: a + b)
+print((lambda a, b: a + b)(10, 20))
+
+l1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+l2 = []
+
+
+# 匿名函数
+
+
+def fn(func, lst):
+    '''
+    该函数用于将指定的元素输出到新的列表中
+    参数 lst：用来保存新表
+
+
+    '''
+    for n in lst:
+        if func(n):
+            l2.append(n)
+    return l2
+
+
+r = filter(lambda i: i % 2 == 0, l1)
+print(list(r))
+
+# map（）
+l1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+r = map(lambda i: i + 1, l1)
+print(r)
+print(list(r))
+
+
+# sort()方法
+l3 = ['kkk', 'cc', 'aa', 'hhh']
+l3.sort()
+print(l3)
+l3 = ['kkk', 'c', 'aa', 'hhhhh']
+l3.sort(key=len)
+print(l3)
+l3 = [5, '1', 3, 8, 6]
+l3.sort(key=int)
+print(l3)
