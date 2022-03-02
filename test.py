@@ -1515,7 +1515,7 @@ def fn():
 
 fn()
 print('函数外b：', b)
-"""
+
 # 递归
 # 创建一个函数求10！
 
@@ -1716,3 +1716,676 @@ print(l3)
 l3 = [5, '1', 3, 8, 6]
 l3.sort(key=int)
 print(l3)
+
+
+# 闭包
+a = 20
+
+
+def fn():
+    # 在函数内部定义一个变量
+    a  = 10
+    # 在函数fn（）内部定义一个函数fn2（）
+    def fn2():
+        print('我是fn2', a)
+
+    # 将函数fn2（）作为返回值返回
+    return fn2()
+
+# r是调用fn（）后返回的函数，在函数内部定义，并不是全局函数
+# 因此外部无法访问到函数fn（）内部的变量，r能访问到内部变量
+r = fn()
+r
+print(a)
+
+
+# 求平均值
+nums = []
+
+
+# 创建一个函数来计算平均值
+def averager(n):
+    # 将n添加到列表中
+    nums.append(n)
+    # 计算平均值
+    return sum(nums)/len(nums)
+
+
+print(averager(10))
+print(averager(20))
+print(averager(30))
+
+
+# 平均数优化
+def make_averager():
+    nums = []
+
+    # 创建一个函数来计算平均值
+    def averager(n):
+        # 将n添加到列表中
+        nums.append(n)
+        # 计算平均值
+        return sum(nums)/len(nums)
+
+    return averager
+
+
+averager = make_averager()
+print(averager(10))
+print(averager(20))
+print(averager(20))
+print(averager(20))
+
+
+
+
+# 装饰器引入
+# 新需求：在函数执行前后增加提示
+# 直接修改原函数较为麻烦且违反ocp原则
+def add(a, b):
+    '''
+    求两个数的和
+    '''
+    r = a + b
+    return r
+
+
+def mul(a , b):
+    '''
+    求两个数的乘积
+    '''
+    r = a * b
+    return r
+
+
+# 可根据现有函数创建一个新的函数
+def new_add(a, b):
+    print('加法开始计算~~~')
+    c = add(a, b)
+    print('加法计算完成~~~')
+    return c
+
+
+r = new_add(10, 20)
+print(r)
+
+
+# 装饰器使用
+def begin_end(old):
+    '''
+    用来对其他函数进行扩展
+    参数：
+        old 要扩展的函数对象
+    '''
+    # 创建一个新的函数，扩展被调用的函数
+    # 参数采用不定长参数，可以根据被调用函数的参数数量自动接收
+    def new_function(*args, **kwargs):
+        print('程序开始执行')
+        # 调用被扩展的函数
+        result = old(*args, **kwargs)
+        print('程序执行完毕')
+        # 返回函数的执行结果
+        return result
+
+    # 返回新函数
+    return new_function
+
+
+f1 = begin_end(add)
+f2 = begin_end(mul)
+r = f1(2, 3)
+p = f2(5, 6)
+print(r)
+print(p)
+
+
+def fn3(old):
+    '''
+    用来对其他函数进行扩展
+    参数：
+        old 要扩展的函数对象
+    '''
+    # 创建一个新的函数，扩展被调用的函数
+    # 参数采用不定长参数，可以根据被调用函数的参数数量自动接收
+    def new_function(*args, **kwargs):
+        print('这里是fn3装饰器~~~')
+        # 调用被扩展的函数
+        result = old(*args, **kwargs)
+        print('这里是fn3装饰器~~~')
+        # 返回函数的执行结果
+        return result
+
+    # 返回新函数
+    return new_function
+
+
+@begin_end
+@fn3
+def say_helllo():
+    print('hello')
+
+
+say_helllo()
+
+
+
+
+
+
+# 类与对象
+
+
+# 类
+class MyClass:
+    pass
+
+
+print(MyClass)
+# 使用类来创建对象，就像调用一个函数
+mc1 = MyClass()  # mc就是通过MyClass创建的对象，也是MyClass的实例
+mc2 = MyClass()
+mc3 = MyClass()
+
+print(mc1, type(mc1))
+
+
+# 对象创建流程
+class MyClass:
+    pass
+
+
+mc = MyClass()
+mc.name = '孙悟空'  # 对象属性赋值为“孙悟空”
+print(mc.name)  # 输出对象属性与变量类似
+
+
+# 类的定义
+class Person:
+    # 在类的代码块中，可以定义变量和函数
+    # 在类中所定义的变量，将会成为所有实例的公共属性，所有实例都可以访问这些变量
+    name = '孙悟空'  # 公共属性，所有实例都可以访问
+
+    # 在类中定义的函数称为方法，这些方法可以通过该类所有实例来访问
+    def say_hello(a):
+        print('你好')
+
+
+# 创建Person类的实例
+p1 = Person()
+p2 = Person()
+
+print(p1.name)
+print(p2.name)
+
+# 方法和函数调用的区别：
+# 如果是函数调用，则调用时传几个参数，就会由几个实参；
+# 但如果是方法调用，默认传递一个参数，所以方法中至少要定义一个形参。
+p1.say_hello()
+p2.say_hello()
+
+
+# 属性和方法
+class Person:
+    name = '孙悟空'
+
+    def say_hello(a):
+        print('你好')
+
+
+p1 = Person()
+p2 = Person()
+print(p1.name)  # 孙悟空
+# 修改p1的name属性
+p1.name = '猪八戒'
+# 实例化对象p1中原来没有name属性，查找到类person中的name属性
+# 修改p1name属性后，在对象p1的内存中添加name属性
+print(p1.name)  # 猪八戒
+print(p2.name)  # 孙悟空
+
+
+# self
+class Person:
+    name = '孙悟空'
+
+    def say_hello(self):
+        # say_hello()方法实现如下格式：你好，我是xxx
+        # 在方法中不能直接调用类中的属性如：print('你好，我是%s'% name)
+        # 第一个参数就是调用方法的对象本身
+        # 如果是p1调用，则第一个参数就是p1对象
+        # 如果是p2调用，则第一个参数就是p2对象
+        # 一般将这个参数命名为self。
+        print('你好,我是%s' % self.name)
+
+
+p1 = Person()
+p2 = Person()
+p1.name = '孙悟空'
+p2.name = '猪八戒'
+p1.say_hello()  # 你好,我是孙悟空
+p2.say_hello()  # 你好,我是猪八戒
+
+
+# 对象初始化
+class Person:
+    def say_hello(self):
+        print('你好,我是%s' % self.name)
+
+# 目前来讲，对于Person类来说name属性是必须的，而且每个对象的name属性都是不同的
+# 而现在是定义对象之后，手动将name属性添加到对象中，这种方式容易被忽略或出现错误
+# 我们希望在创建对象时，必须设置name属性，如果不设置对象将无法创建
+# 属性的创建应该是自动完成的，而不是创建对象后手动添加
+
+    def __init__(self, name):
+        # 通过self向新建的对象中初始化属性
+        # 每调用一次init方法就会复制实例化对象一个name属性
+        self.name = name
+
+
+# 调用一个Person相当于调用init，传参到init中
+p1 = Person('孙悟空')
+p2 = Person('猪八戒')
+
+p1.say_hello()
+p2.say_hello()
+
+
+
+
+# 练习：自定义一个表示狗的类（Dog）
+# 属性：name,age,gender,height
+# 方法：call(),bite(),run()
+class Dog:
+
+    def __init__(self, name, age, gender, height):
+        self.name = name
+        self.age = age
+        self.gender = gender
+        self.height = height
+
+    def call(self):
+        print('狗在叫')
+
+    def bite(self):
+        print('狗在咬')
+
+    def run(self):
+        print('狗在跑')
+
+
+d1 = Dog('小5', 23, '男', 167)
+d1.call()
+d1.bite()
+d1.run()
+
+
+
+
+# 封装
+class Dog:
+
+    def __init__(self, name):
+        # 没有一种方法可以完全隐藏属性，封装仅仅是将属性名设置为不常用的，防君子不防小人。
+        self.hidden_name = name
+
+    def say_hello(self):
+        print('hello, 这里是狗%s' % self.hidden_name)
+
+    def get_name(self):
+        '''
+        函数用来获取属性
+        '''
+        # 获取属性的同时进行其他操作
+        print('用户属性已经被获取')
+        return self.hidden_name
+
+    def set_name(self, name):
+        '''
+        函数用来修改属性
+        '''
+        print('用户属性已经被修改')
+        self.hidden_name = name
+
+
+d1 = Dog('小5')
+d1.say_hello()
+
+
+
+# getter和setter方法
+class Person:
+
+    def __init__(self, name):
+        self._name = name
+
+    # getter方法装饰器
+    @property
+    def name(self):
+        print('getter方法执行了')
+        return self._name
+
+    # setter方法装饰器: @属性名(???).setter
+    # 属性名还是getter的方法名
+    @name.setter
+    def set_name(self, name):
+        print('setter方法执行了')
+        self._name = name
+
+
+# 此处可将方法像属性一样调用： 实例化对象.方法
+p1 = Person('孙悟空')
+p1.set_name = '猪八戒'
+print(p1.name)
+
+
+
+
+# 继承
+# 定义一个类Animal，这个类需要两个方法:run() sleep()、
+class Animal:
+    def run(self):
+        print('动物会跑~~~')
+
+    def sleep(self):
+        print('动物会睡觉~~~')
+
+# 定义一个类Dog，这个类需要三个方法:run() sleep() bark()
+# 有一个类能实现大部分功能，但是不能实现全部功能
+# 如何让这个类实现全部功能？
+#   1.直接修改这个类，在这个类中添加需要的功能  --修改麻烦并且违反OCP原则
+#   2.直接创建一个新的类 --创建比较麻烦，需要复制粘贴，会出现大量的重复性代码
+#   3.直接从Animal类中继承属性和方法
+
+
+class Dog(Animal):
+    def bark(self):
+        print('狗会嚎叫~~~')
+
+
+d = Dog()
+d.run()
+d.sleep()
+d.bark()
+
+# isinstance检查一个对象是否一个类的实例，如果这个类是这个对象的父类，也会返回True
+print(isinstance(d, Dog))
+print(isinstance(d, Animal))
+
+# 所有的对象都是object的实例
+print(isinstance(d, object))
+
+# 检查一个类是否为一个类的子类
+
+print(issubclass(Dog, Animal))
+print(issubclass(Dog, object))
+print(issubclass(Animal, object))
+print(issubclass(print, object))
+
+
+# 方法的重写
+class A(object):
+    def AA(self):
+        print('AAA')
+
+
+class B(A):
+    def AA(self):
+        print('bbb')
+
+
+class C(B):
+    def AA(self):
+        print('ccc')
+
+
+c = C()
+c.AA()
+
+
+
+# super()
+class Animal:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    def run(self):
+        print('动物会跑~~~')
+
+    def sleep(self):
+        print('动物会睡觉~~~')
+
+
+# 父类中的所有方法都会被子类继承，包括特殊方法，也可以重写特殊方法。
+class Dog(Animal):
+    def __init__(self, name, age):
+        # 希望可以直接调用父类的__init__来初始化父类中定义的属性
+        super().__init__(name)
+        self._age = age
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, age):
+        self._age = age
+
+
+d = Dog('小5', 23)
+print(d.name)
+print(d.age)
+
+
+
+# 多重继承
+
+
+class A(object):
+    def test(self):
+        print('AAA')
+
+
+class B(object):
+    def test2(self):
+        print('BBB')
+
+
+class C(A, B):
+    pass
+
+
+c = C()
+c.test()
+c.test2()
+
+print(A.__bases__)
+print(B.__bases__)
+print(C.__bases__)
+
+
+class A(object):
+    def test(self):
+        print('AAA')
+
+
+class B(object):
+    def test2(self):
+        print('BBB')
+
+
+class C(A, B):
+    pass
+
+
+c = C()
+c.test()
+
+
+
+
+# 多重继承的复杂性
+class A(object):
+    def test(self):
+        print('这是A的test方法')
+
+
+class B(object):
+    def test(self):
+        print('这是B的test方法')
+
+
+class C(A, B):
+    pass
+
+
+c = C()
+c.test()
+
+
+
+
+# 多态
+class A:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+
+class B:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+
+class C:
+    pass
+
+
+a = A('孙悟空')
+b = B('猪八戒')
+
+
+# 对于函数say_hello（）来说，只要对象中含有name属性，就可以作为参数传递
+# 这个函数不会考虑对象的类型，只要有name属性即可
+def say_hello(obj):
+    print('hello,我是%s' % obj.name)
+
+
+say_hello(a)
+say_hello(b)
+
+
+# 在say_hello2（）中做了一个类型检查，也就是只有obj是A类型的对象时，才可以正常使用
+# 其他类型的对象都无法使用该函数，这个函数就违反了多态
+# 违反了多态的函数，只适用于一种类型的对象，无法处理其他类型对象，这样导致函数的适应性非常差
+def say_hello2(obj):
+    # 类型检查
+    # 注意：像isinstance（）这种函数在开发中一般不会使用，因为这意味着函数可能违反了多态
+    if isinstance(obj, A):
+        print('hello,我是%s' % obj.name)
+    else:
+        print('此类型对象无法使用该函数')
+
+
+say_hello2(a)
+say_hello2(b)
+
+
+
+
+# 类和方法总结
+# 定义一个类
+class A:
+    # 类属性，直接在类中定义的属性是类属性
+    # 类属性可以通过类或类的实例化对象访问
+    # 但类属性只能通过类对象修改，无法通过实例化对象修改
+    count = 0
+
+
+a = A()
+print(a.count)
+print(A.count)
+a.count = 100
+A.count = 10
+print(a.count)
+print(A.count)
+
+
+class B:
+    # 实例属性，通过实例化对象添加的属性属于实例属性
+    # 实例属性只能通过实例对象来访问和修改，类对象无法访问修改
+    def __init__(self):
+        self.name = '孙悟空'
+
+
+b = B()
+# print('B,', B.name)  # 报错
+print('b:', b.name)
+
+
+class C:
+    # 实例方法：在类中定义，以第一个参数的方法都是实例方法
+    # 实例方法在调用时，Python会将调用对象作为self传入
+    # 实例方法可以通过实例和类调用。当通过实例调用时，会自动将当前对象作为self传入
+    # 当通过类调用时，不会自动传递self，此时需要手动传递self
+    def test(self):
+        print('这是test方法~~~')
+
+
+c = C()
+c.test()
+# 类调用方法时,需要手动传入实例化对象
+C.test(c)  # 等价于c.test()
+
+
+# 类方法
+class D:
+    @classmethod
+    def test(cls):
+        print('这是一个类方法~~~')
+        print('类方法', cls)
+
+
+d = D()
+D.test()
+d.test()
+
+
+# 静态方法
+class E:
+    @staticmethod
+    def test():
+        print('这是一个静态方法~~~')
+
+
+e = E()
+E.test()
+e.test()
+
+"""
+
+
+
+
+

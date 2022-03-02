@@ -4150,12 +4150,1646 @@ print(l3)
 
 
 
+[^19]: 回文字符串：字符串从前往后念和从后往前念是一样的，如abcba
+
+
+
+
+
+
+
+### 闭包
+
+闭包也是一种高阶函数，将函数作为返回值返回。通过闭包可以创建一些只有当前函数能访问的变量，可以将一些私有的数据藏到闭包中。实际用的不多。
+
+闭包的要件：
+
+- 函数嵌套
+- 外部函数将内部函数作为返回值返回
+- 内部函数必须使用到外部函数的变量
+
+```python
+a = 20
+
+
+def fn():
+    # 在函数内部定义一个变量
+    a  = 10
+    # 在函数fn（）内部定义一个函数fn2（）
+    def fn2():
+        print('我是fn2', a)
+
+    # 将函数fn2（）作为返回值返回
+    return fn2()
+
+# r是调用fn（）后返回的函数，在函数内部定义，并不是全局函数
+# 因此外部无法访问到函数fn（）内部的变量，r能访问到内部变量
+r = fn()
+r
+print(a)
+```
+
+以上代码运行结果为：
+
+![image-20220213213707632](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220213213707632.png)
+
+
+
+通过闭包可以创建一些只有当前函数能访问的变量，可以将一些私有的数据藏到闭包中。实际用的不多。
+
+```python
+nums = []
+
+
+# 创建一个函数来计算平均值
+def averager(n):
+    # 将n添加到列表中
+    nums.append(n)
+    # 计算平均值
+    return sum(nums)/len(nums)
+	# sum是python内置求和函数
+
+print(averager(10))
+print(averager(20))
+print(averager(30))
+```
+
+以上代码运行结果为：
+
+![image-20220213213800831](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220213213800831.png)
+
+在以上例子中，可以求n个数的平均值，但是nums作为全局变量有可能在后续代码中被修改或者被覆盖，因此可以创建一个闭包，使得变量nums只能在averager（）函数内部看到。优化后代码如下：
+
+```python
+def make_averager():
+	# 在函数内部定义nums变量使得变量无法被外部访问，因此在后续代码中nums变量的改变对函数内nums变量没有影响
+    nums = []
+
+    # 创建一个函数来计算平均值
+    def averager(n):
+        # 将n添加到列表中
+        nums.append(n)
+        # 计算平均值
+        return sum(nums)/len(nums)
+
+    return averager
+
+
+averager = make_averager()
+print(averager(10))
+print(averager(20))
+```
+
+
+
+### 装饰器
+
+#### 装饰器引入
+
+开发过程中可以通过修改函数中的代码来完成需求，但是会产生以下问题：1.如果要修改的函数过多，修改起来会比较麻烦；2.不方便后期维护；3.违反开闭原则[^20]（OCP）。
+
+我们希望在不修改原函数的情况下，来对函数进行扩展，只需要根据现有的函数创建一个新的函数。 
+
+```python
+def add(a, b):
+    '''
+    求两个数的和
+    '''
+    r = a + b
+    return r
+
+
+def mul(a , b):
+    '''
+    求两个数的乘积
+    '''
+    r = a * b
+    return r
+
+
+# 可根据现有函数创建一个新的函数
+def new_add(a, b):
+    print('加法开始计算~~~')
+    c = add(a, b)
+    print('加法计算完成~~~')
+    return c
+
+
+r = new_add(10, 20)
+print(r)
+```
+
+
+
+
+
+#### 装饰器使用
+
+在以上例子中，已经可以在不修改源代码的情况下对函数进行扩展。但是这种方式要求每扩展一个函数就手动创建一个新的函数。
+
+为了解决这个问题可以创建一个函数，让这个函数可以自动生产函数。
+
+```python
+def add(a, b):
+    '''
+    求两个数的和
+    '''
+    r = a + b
+    return r
+
+
+def mul(a , b):
+    '''
+    求两个数的乘积
+    '''
+    r = a * b
+    return r
+
+
+# 可根据现有函数创建一个新的函数
+def new_add(a, b):
+    print('加法开始计算~~~')
+    c = add(a, b)
+    print('加法计算完成~~~')
+    return c
+
+
+r = new_add(10, 20)
+print(r)
+
+
+# 装饰器使用
+def begin_end(old):
+    '''
+    用来对其他函数进行扩展
+    参数：
+        old 要扩展的函数对象
+    '''
+    # 创建一个新的函数，扩展被调用的函数
+    # 参数采用不定长参数，可以根据被调用函数的参数数量自动接收
+    def new_function(*args, **kwargs):
+        print('程序开始执行')
+        # 调用被扩展的函数
+        result = old(*args, **kwargs)
+        print('程序执行完毕')
+        # 返回函数的执行结果
+        return result
+
+    # 返回新函数
+    return new_function
+
+
+f1 = begin_end(add)
+f2 = begin_end(mul)
+r = f1(2, 3)
+p = f2(5, 6)
+print(r)
+print(p)
+```
+
+以上代码运行结果为：
+
+![image-20220214162617123](image-20220214162617123.png)
+
+像begin_end（）这种函数就称为装饰器，通过装饰器可以在不修改原来函数的情况下对函数进行扩展。在开发中，都是通过装饰器扩展函数的功能。
+
+简单来说，装饰器就是把一个函数传到一个新函数里面，执行结果和旧函数一样，但是功能更加强大。
+
+在定义函数时，可以通过 @ 装饰器，来使用指定的装饰器来装饰当前函数。
+
+可以同时为一个函数指定多个装饰器,这样函数会按照由内到外的顺序被装饰。
+
+
+
+```python
+# 创建装饰器begin_end
+def begin_end(old):
+    '''
+    用来对其他函数进行扩展
+    参数：
+        old 要扩展的函数对象
+    '''
+    # 创建一个新的函数，扩展被调用的函数
+    # 参数采用不定长参数，可以根据被调用函数的参数数量自动接收
+    def new_function(*args, **kwargs):
+        print('程序开始执行')
+        # 调用被扩展的函数
+        result = old(*args, **kwargs)
+        print('程序执行完毕')
+        # 返回函数的执行结果
+        return result
+
+    # 返回新函数
+    return new_function
+
+
+# 创建装饰器fn3
+def fn3(old):
+    '''
+    用来对其他函数进行扩展
+    参数：
+        old 要扩展的函数对象
+    '''
+    # 创建一个新的函数，扩展被调用的函数
+    # 参数采用不定长参数，可以根据被调用函数的参数数量自动接收
+    def new_function(*args, **kwargs):
+        print('这里是fn3装饰器~~~')
+        # 调用被扩展的函数
+        result = old(*args, **kwargs)
+        print('这里是fn3装饰器~~~')
+        # 返回函数的执行结果
+        return result
+
+    # 返回新函数
+    return new_function
+
+
+# 常见使用装饰器的语句： @装饰器
+# 装饰器由内到外执行
+@begin_end
+@fn3
+def say_helllo():
+    print('hello')
+
+
+say_helllo()
+```
+
+以上代码运行结果为：
+
+![image-20220215101313535](image-20220215101313535.png)
+
+
+
+
+
+
+
+
+
+## 类与对象(Object)
+
+对象是内存中专门用来存储数据的一块区域，对象中可以存放各种数据（比如：数字、布尔值、代码...）。
+
+对象由三部分组成：
+
+	1. 对象的标识（id）
+	2. 对象的类型（type）
+	3. 对象的值（value）
+
+
+
+### 面向对象（oop）
+
+Python是一门面向对象的编程语言。所谓的的面向对象语言，简单理解就是语言中所有操作都是通过对象来进行的。
+
+**面向过程和面向对象**
+
+面向过程指的是程序的功能逻辑分解一个个的小步骤，通过完成一个个小步骤来完成程序。这种编程方式符合人类思维，编写起来相对简单。但是这种方式编写的代码往往只适用于一个功能。如果要实现别的功能，即使功能相差极小，也往往要重新编写代码，所以可复用性比较低，并且难于维护。
+
+例子：
+
+1. 妈妈起床
+2. 妈妈洗漱
+3. 妈妈做早饭
+4. 妈妈叫孩子起床
+5. 孩子洗漱
+6. 孩子吃早饭
+7. 孩子上学
+
+在上述例子中，面向过程的编程把“妈妈叫孩子上学”的行为细分成多个步骤，但如果代码需要复用多次，有极小差别的复用修改麻烦，程序维护不方便。
+
+
+
+面向对象的编程语言关注的是对象，而不关注过程。对于面向对象的语言来说，一切都是对象。
+
+例子：
+
+1. 妈妈叫孩子上学
+
+在上述例子中，代码不关注“妈妈叫孩子起床”的过程，只关注对象。“妈妈”、“孩子”的具体行为由对象内部定义。。面向对象的编程思想将所有的功能统一保存到对应的对象中。
+
+比如“妈妈”的功能保存到“妈妈”的对象中，“孩子”的功能保存到“孩子”对象中。要使用某个功能，直接找到相应的对象即可。这样的方式编程方式易于阅读，并且容易维护，容易复用。但是这种方式编写起来不太符合常规的思维，编写稍微麻烦一点。
+
+**面向对象思想总结:**   1.找对象； 2.搞对象。
+
+
+
+
+
+
+
+### 类（class）的简介
+
+目前suo1学习的对象都是Python内置的对象。但是内置对象并不能满足所有的需求。所以在开发中经常需要自定义一些对象。
+
+类，简单理解为一张图纸，在程序中需要根据类来创建对象。类就是对象的图纸，也称对象是类的实例（instance），如果多个对象是通过一个类创建的，称这些对象是一类对象。
+
+像int（）、float（）、bool（）、str（）、list（）、dict（）...这些都是类
+
+```python
+a = int(10)  # 创建一个int类型的实例
+# a = 10 ,值比较特殊，大多数对象需要用前者实现创建
+```
+
+
+
+定义一个简单的类，使用class（）关键字来定义类，语法和函数类似。
+
+语法： class 类名[^21]（[父类]）:
+
+​						代码块
+
+使用类创建对象就像调用函数一样。
+
+```python
+class MyClass():
+	 pass
+
+
+print（Mclass）
+# 使用类来创建对象，就像调用一个函数
+mc1 = MyClass()  # mc就是通过MyClass创建的对象，也是MyClass的实例
+mc2 = ()
+mc3 = ()
+print(mc1, type(mc1))
+```
+
+以上代码运行结果为：
+
+![image-20220216175727456](image-20220216175727456.png)
+
+
+
+
+
+
+
+### 对象的创建流程
+
+事实上，类也是对象，可以理解为创建对象的对象。类是type类型的对象，定义类实际上就是定义了一个type类型的对象，与定义int、str类型的对象没有什么区别。
+
+流程：1.创建一个变量（mc）
+
+​			2.在内存中创建一个新对象
+
+​			3.将对象的id赋值给变量
+
+通过MyClass这个类创建的对象都是空对象，可以像对象中添加变量，对象中的变量成为属性。语法： 对象.属性名 = 属性值。
+
+```python
+class MyClass:
+    pass
+
+
+mc = MyClass()  # 调用MyClass创建对象
+mc.name = '孙悟空'  # 对象属性赋值为“孙悟空”
+print(mc.name)  # 输出对象属性与变量类似
+```
+
+![image-20220217115759660](image-20220217115759660.png)
+
+
+
+
+
+
+
+### 类的定义
+
+类和对象都是对现实生活中的事物或程序中内容的抽象，实际上所有的事物都由两部分构成：
+
+1. 数据（属性）  
+2. 行为（方法）
+
+在类的代码块中可以定义变量和函数。
+
+变量会成为该类实例的公共属性，所有的该类实例都可以通过 对象.属性名 的形式访问；
+
+函数会成为该类实例的公共方法，所有的该类实例都可以通过 对象.方法名（） 的形式调用方法。
+
+**注意：**方法调用时，第一个参数由解析器自动传递，所以定义方法时，至少要定义一个形参！
+
+```python
+class Person:
+    # 在类的代码块中，可以定义变量和函数
+    # 在类中所定义的变量，将会成为所有实例的公共属性，所有实例都可以访问这些变量
+    name = '孙悟空'  # 公共属性，所有实例都可以访问
+
+    # 在类中定义的函数称为方法，这些方法可以通过该类所有实例来访问
+    def say_hello(a):
+        print('你好')
+
+
+# 创建Person类的实例
+p1 = Person()
+p2 = Person()
+
+
+print(p1.name)
+print(p2.name)
+
+# 方法和函数调用的区别：
+# 如果是函数调用，则调用时传几个参数，就会由几个实参；
+# 但如果是方法调用，默认传递一个参数，所以方法中至少要定义一个形参（a）。
+p1.say_hello()
+p2.say_hello()
+```
+
+以上代码运行结果为：
+
+![image-20220217183630456](image-20220217183630456.png)
+
+
+
+
+
+
+
+### 属性和方法
+
+ 类中定义的属性和方法都是公共的，任何该类实例都可以访问。
+
+属性和方法查找的流程：
+
+调用一个对象的属性时，解析器会先在当前对象中寻找是否含有该属性。如果有，则直接返回当前对象的属性值；如果没有，则去当前对象的类对象中寻找，有则返回类对象的属性值，无则报错。
+
+![image-20220218110404990](image-20220218110404990.png)
+
+```python
+class Person:
+    name = '孙悟空'
+
+    def say_hello(a):
+        print('你好')
+
+
+p1 = Person()
+p2 = Person()
+print(p1.name)  # 孙悟空
+# 修改p1的name属性
+p1.name = '猪八戒'
+# 实例化对象p1中原来没有name属性，查找到类person中的name属性
+# 修改p1name属性后，在对象p1的内存中添加name属性
+print(p1.name)  # 猪八戒
+print(p2.name)  # 孙悟空
+```
+
+以上代码运行结果为：
+
+![image-20220218115234507](image-20220218115234507.png)
+
+
+
+类对象和实例对象中都可以保存属性（方法）。如果这个属性（方法）是所有的实例共有的，则应该将其保存到类对象中；如果这个属性（方法）是某个实例独有的，则应保存到实例对象中。
+
+一般情况下，属性保存到实例对象中，方法保存到类对象中。 
+
+方法每次被调用时，解析器都会自动传递第一个参数，第一个参数就是调用方法的对象本身。一般将这个参数命名为self。
+
+```python
+class Person:
+    name = '孙悟空'
+
+    def say_hello(self):
+        # say_hello()方法实现如下格式：你好，我是xxx
+        # 在方法中不能直接调用类中的属性如：print('你好，我是%s'% name)
+        # 第一个参数就是调用方法的对象本身
+        # 如果是p1调用，则第一个参数就是p1对象
+        # 如果是p2调用，则第一个参数就是p2对象
+        # 一般将这个参数命名为self。
+        print('你好,我是%s' % self.name)
+
+
+p1 = Person()
+p2 = Person()
+p1.name = '孙悟空'
+p2.name = '猪八戒'
+p1.say_hello()  # 你好,我是孙悟空
+p2.say_hello()  # 你好,我是猪八戒
+```
+
+以上代码运行结果为：
+
+![image-20220218165345279](image-20220218165345279.png)
+
+
+
+### 对象初始化--\__init\__()方法
+
+
+
+在类中可以定义一些特殊方法（魔术方法），特殊方法都是以双下划线==__==开头==__==结尾。特殊方法不需要自己调用，不要尝试去调用特殊方法。特殊方法将会在特殊时刻自动调用。
+
+创建对象的流程:
+
+1. 创建一个变量
+2. 在内存中创建一个新对象
+3. \_init\_()方法执行
+4. 将对象的id赋值给变量
+
+调用类创建对象时，类后面的所有参数都会一次传递到init（）中。
+
+init（初始化）会在对象创建以后立刻执行，可以用来向新创建的对象中初始化属性。
+
+init（）方法可以防止忽略传参，简化初始化对象的流程。
+
+```python
+class Person:
+    def say_hello(self):
+        print('你好,我是%s' % self.name)
+
+# 目前来讲，对于Person类来说name属性是必须的，而且每个对象的name属性都是不同的
+# 而现在是定义对象之后，手动将name属性添加到对象中，这种方式容易被忽略或出现错误
+# 我们希望在创建对象时，必须设置name属性，如果不设置对象将无法创建
+# 属性的创建应该是自动完成的，而不是创建对象后手动添加
+
+    def __init__(self, name):
+        # 通过self向新建的对象中初始化属性
+        # 每调用一次init方法就会复制实例化对象一个name属性
+        self.name = name
+
+
+# 调用一个Person相当于调用init，传参到init中
+p1 = Person('孙悟空')
+p2 = Person('猪八戒')
+
+p1.say_hello()
+p2.say_hello()
+```
+
+以上代码运行结果为：
+
+![image-20220219220359540](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220219220359540.png)
+
+
+
+
+
+类的基本结构:
+
+class 类名（[父类]）：
+
+​		公共的属性...
+
+​		\# 对象的初始化方法
+
+​		def \ __init\__(self, ...):
+
+​		\# 其他的方法
+
+​		def method_1(self, ...):
+
+​		\# 其他的方法
+
+​		def method_2(self, ...):
+
+​			...
+
+​	...
+
+
+
+
+
+### 练习
+
+自定义一个表示狗的类（Dog）。
+
+属性：name,age,gender,height
+
+方法：call(),bite(),run()
+
+```python
+class Dog:
+    
+    def __init__(self, name, age, gender, height):
+        self.name = name
+        self.age = age
+        self.gender = gender
+        self.height = height
+    
+    def call(self):
+        print('狗在叫')
+        
+    def bite(self):
+        print('狗在咬')
+        
+    def run(self):
+        print('狗在跑')
+
+
+d1 = Dog('小5', 23, '男', 167)
+d1.call()
+d1.bite()
+d1.run()
+```
+
+以上代码运行结果为：
+
+![image-20220219221812128](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220219221812128.png)
+
+
+
+
+
+
+
+## 封装
+
+#### 封装简介
+
+封装是面向对象的三大特性之一，指的是隐藏对象中一些不希望被外部所访问到的属性或方法。
+
+--如何隐藏一个对象中的属性？
+
+-将对象的属性名修改为一个外部不知道的属性名[^22]
+
+-如果获取（修改）对象中的属性？
+
+-提供一个getter[^23]和setter[^24]方法使外部可以访问到属性
+
+- getter：获取对象中的指定属性（get_属性名）
+- setter：用来设置对象的指定属性（set_属性名）
+
+```python
+class Person:
+
+    def __init__(self, name):
+        self._name = name
+
+    # getter方法装饰器
+    @property
+    def name(self):
+        print('getter方法执行了')
+        return self._name
+
+    # setter方法装饰器: @属性名(???).setter
+    # 属性名还是getter的方法名
+    @name.setter
+    def set_name(self, name):
+        print('setter方法执行了')
+        self._name = name
+
+
+# 此处可将方法像属性一样调用： 实例化对象.方法
+p1 = Person('孙悟空')
+p1.set_name = '猪八戒'
+print(p1.name)
+```
+
+以上代码运行结果为：
+
+![image-20220224211424570](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224211424570.png)
+
+
+
+**总结：**使用封装能增加类的定义的复杂程度，也确保了数据的安全性。
+
+1. 隐藏了属性名，使调用者无法随意的修改对象中的属性；
+2. 增加了getter和setter方法，很好的控制属性是否只读（写）。如果希望属性是只读的，可以直接去掉setter方法；如果希望属性不能被外部访问，则可以直接去掉getter方法；
+3. 使用setter方法设置属性，可以增加数据的验证，确保数据的值是正确的；
+4. 使用getter方法获取属性，使用setter方法设置属性。可以在读取属性和修改属性的同时做一些其他的处理。
+
+```python
+class Dog:
+
+        def __init__(self, name):
+        # 没有一种方法可以完全隐藏属性，封装仅仅是将属性名设置为不常用的，防君子不防小人。
+        self.hidden_name = name
+
+    def say_hello(self):
+        print('hello, 这里是狗%s' % self.hidden_name)
+
+    def get_name(self):
+        '''
+        函数用来获取属性
+        '''
+        # 获取属性的同时进行其他操作
+        print('用户属性已经被获取')
+        return self.hidden_name
+
+    def set_name(self, name):
+        '''
+        函数用来修改属性
+        '''
+        print('用户属性已经被修改')
+        self.hidden_name = name
+
+
+d1 = Dog('小5')
+d1.say_hello()
+```
+
+以上代码运行结果为：
+
+![image-20220224211533266](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224211533266.png)
+
+
+
+
+
+
+
+可以为对象的属性使用双下划开头：__xxx_
+
+双下划线开头的属性，是对象的隐藏属性，隐藏属性只能在类的内部访问，无法通过对象访问。其实隐藏属性只不过是Python自动为属性改了一个名字，实际上是名字修改为了， __类名__属性名。比如_ _name  ->  _Person_name 。本质上和手动命名的hidden_name没什么区别
+
+![image-20220223111846587](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220223111846587.png)
+
+使用__开头的属性，实际上依然可以在外部访问，所以这种方式我们一般不用。一般我们会将一些私有属性（不希望呗外部访问的属性）以单下划线 _开头。    一般情况下，使用\_开头的属性都是私有属性，没有特殊需求不要修改私有属性。
+
+
+
+
+
+
+
+
+
+[^20]: 开闭原则：程序的设计，要求开放对程序的扩展，要关闭对程序的修改
+
+[^21]: **大驼峰命名法：**每个单词首字母大写，常用于类名，函数名，属性，命名空间；小驼峰命名法：变量一般用小驼峰法标识。驼峰法的意思是：除第一个单词之外，其他单词首字母大写。
+
+[^22]: 命名习惯为：hidden_属性名。如hidden_name
+[^23]: 命名习惯
+[^24]: 命名习惯
+
+
+
+
+
+
+
+### property装饰器
+
+property装饰器，用来将一个get方法转化为对象的属性，添加property装饰器以后可以像调用属性一样使用get方法
+
+setter方法装饰器：@属性名.setter
+
+函数名和属性名一致，调函数还是属性？？
+
+**注意：**必须先有getter才有setter，不可读的函数更加不可写。
+
+```python
+class Person:
+
+    def __init__(self, name):
+        self._name = name
+
+    # getter方法装饰器
+    @property
+    def name(self):
+        print('getter方法执行了')
+        return self._name
+
+    # setter方法装饰器: @属性名(???).setter
+    # 属性名还是getter的方法名
+    @name.setter
+    def set_name(self, name):
+        print('setter方法执行了')
+        self._name = name
+
+
+# 此处可将方法像属性一样调用： 实例化对象.方法 
+p1 = Person('孙悟空')
+p1.set_name = '猪八戒'
+print(p1.name)
+```
+
+以上代码运行结果为：
+
+![image-20220223152018164](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220223152018164.png)
+
+
+
+
+
+
+
+## 继承和多态
+
+### 继承简介
+
+继承是面向对象三大特性之一，通过继承可以直接让子类获取到父类的属性和方法。避免编写重复性的代码，并且也符合OPC原则，所以经常需要通过继承来对一个类进行扩展。
+
+在定义类时，可以在类名后的括号中指定当前类的父类（超类、基类、super）。子类（衍生类）可以直接继承父类中所有的属性和方法。
+
+在创建类时，如果省略了父类，则默认父类为object。object是所有类的父类，所有类都继承自object。
+
+
+
+#### isinstance()
+
+isinstance()检查一个对象是否一个类的实例，如果这个类是这个对象的父类，也会返回True
+
+
+
+#### issubclass()
+
+issubclass()检查一个类是否为一个类的子类。
+
+```python
+# 定义一个类Animal，这个类需要两个方法:run() sleep()、
+class Animal:
+    def run(self):
+        print('动物会跑~~~')
+
+    def sleep(self):
+        print('动物会睡觉~~~')
+
+# 定义一个类Dog，这个类需要三个方法:run() sleep() bark()
+# 有一个类能实现大部分功能，但是不能实现全部功能
+# 如何让这个类实现全部功能？
+#   1.直接修改这个类，在这个类中添加需要的功能  --修改麻烦并且违反OCP原则
+#   2.直接创建一个新的类 --创建比较麻烦，需要复制粘贴，会出现大量的重复性代码
+#   3.直接从Animal类中继承属性和方法
+
+
+class Dog(Animal):
+    def bark(self):
+        print('狗会嚎叫~~~')
+
+
+d = Dog()
+d.run()
+d.sleep()
+d.bark()
+
+# isinstance检查一个对象是否一个类的实例，如果这个类是这个对象的父类，也会返回True
+print(isinstance(d, Dog))
+print(isinstance(d, Animal))
+
+# 所有的对象都是object的实例
+print(isinstance(d, object))
+
+# 检查一个类是否为一个类的子类
+
+print(issubclass(Dog, Animal))
+print(issubclass(Dog, object))
+print(issubclass(Animal, object))
+print(issubclass(print, object))
+```
+
+以上代码运行结果为：
+
+![image-20220223165546333](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220223165546333.png)
+
+
+
+
+
+
+
+### 方法的重写
+
+如果在子类中有和父类同名的方法，则通过子类实例去调用方法时，会调用子类的方法而不是父类的方法，这个特点称为方法的重写（覆盖，override）。
+
+当调用一个对象的方法时，会优先去当前对象中寻找是否具有该方法，如果有则直接调用；如果没有，则去当前对象的父类中寻找；如果父类没有，则去父类的父类中寻找。以此类推，直到找到object，如果依然没有找到，则报错。
+
+```python
+class A(object):
+    def AA(self):
+        print('AAA')
+
+
+class B(A):
+    def AA(self):
+        print('bbb')
+
+
+class C(B):
+    def AA(self):
+        print('ccc')
+
+
+c = C()
+c.AA()
+```
+
+以上代码运行结果为：
+
+![image-20220223171204741](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220223171204741.png)
+
+
+
+
+
+
+
+### super（）
+
+父类中的所有方法都会被子类继承，包括特殊方法，也可以重写特殊方法。
+
+super（）可以用来获取当前类的父类，并且通过super（）返回对象调用父类方法时，不需要传递self。
+
+```python
+class Animal:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    def run(self):
+        print('动物会跑~~~')
+
+    def sleep(self):
+        print('动物会睡觉~~~')
+
+
+# 父类中的所有方法都会被子类继承，包括特殊方法，也可以重写特殊方法。
+class Dog(Animal):
+    def __init__(self, name, age):
+        # 希望可以直接调用父类的__init__来初始化父类中定义的属性
+        super().__init__(name)
+        self._age = age
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, age):
+        self._age = age
+
+
+d = Dog('小5', 23)
+print(d.name)
+print(d.age)
+```
+
+以上代码运行结果为：
+
+![image-20220223182727018](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220223182727018.png)
+
+
+
+
+
+
+
+### 多重继承
+
+隐藏属性: 类名.\_\_bases\_\_ 这个属性可以用来获取当前类的所有父类 。
+
+在Pytyhon中是支持多重继承的，也就是可以为一个类同时指定多个父类。多重继承会使子类同时拥有多个父类，并且会获取到所有父类中的方法。
+
+```python
+class A(object):
+    def test(self):
+        print('AAA')
+
+
+class B(object):
+    def test2(self):
+        print('BBB')
+
+
+class C(A, B):
+    pass
+
+
+c = C()
+c.test()
+c.test2()
+
+print(A.__bases__)
+print(B.__bases__)
+print(C.__bases__)
+```
+
+以上代码运行结果为：
+
+![image-20220224102242574](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224102242574.png)
+
+
+
+
+
+在开发中没有特殊的情况，应该尽量避免使用多重继承，因为多重继承会使代码过于复杂。如果多个父类中有同名的方法，则会先在第一个父类中寻找，然后在第二个，第三个...以此类推的父类中找。写在前面父类的方法会覆盖后面父类的方法。
+
+```python
+class A(object):
+    def test(self):
+        print('这是A的test方法')
+
+
+class B(object):
+    def test(self):
+        print('这是B的test方法')
+
+
+class C(A, B):
+    pass
+
+
+c = C()
+c.test()
+```
+
+以上代码运行结果为：
+
+![image-20220224102925706](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224102925706.png)
+
+多个父类有相同类名，子类调用时寻找方法的路径如下：
+
+![image-20220224103625482](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224103625482.png)
+
+
+
+
+
+
+
+### 多态
+
+多态是面向对象的三大特性之一，多态从字面上理解是多种形态。一个对象可以以不同的形态去呈现。
+
+例如：len（） 之所以一个对象能通过len（）来获取长度，是因为对象中具有一个特殊方法\_\_len\_\_ 换句话说，只要对象中具有\_\_len\_\_ 特殊方法就可以通过len（） 来获取它的长度
+
+```python
+class A:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+
+class B:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+
+class C:
+    pass
+
+
+a = A('孙悟空')
+b = B('猪八戒')
+
+
+# 对于函数say_hello（）来说，只要对象中含有name属性，就可以作为参数传递
+# 这个函数不会考虑对象的类型，只要有name属性即可
+def say_hello(obj):
+    print('hello,我是%s' % obj.name)
+
+
+say_hello(a)
+say_hello(b)
+
+
+# 在say_hello2（）中做了一个类型检查，也就是只有obj是A类型的对象时，才可以正常使用
+# 其他类型的对象都无法使用该函数，这个函数就违反了多态
+# 违反了多态的函数，只适用于一种类型的对象，无法处理其他类型对象，这样导致函数的适应性非常差
+def say_hello2(obj):
+    # 类型检查
+    # 注意：像isinstance（）这种函数在开发中一般不会使用，因为这意味着函数可能违反了多态
+    if isinstance(obj, A):
+        print('hello,我是%s' % obj.name)
+	else:
+        print('此类型对象无法使用该函数')
+
+say_hello(a)
+say_hello(b)
+```
+
+以上代码运行结果为：
+
+![image-20220224144618025](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224144618025.png)
+
+
+
+**总结：**面向对象的三大特性
+
+封装： 确保对象中的数据安全
+
+继承：保证了对象的可扩展性
+
+多态：保证了程序的灵活性
+
+
+
+
+
+
+
+### 属性和方法总结
+
+#### 类属性
+
+类属性，直接在类中定义的属性是类属性。类属性可以通过类或类的实例化对象访问,但类属性只能通过类对象修改，无法通过实例化对象修改。
+
+```python
+class A:
+    # 类属性，直接在类中定义的属性是类属性
+    # 类属性可以通过类或类的实例化对象访问
+    # 但类属性只能通过类对象修改，无法通过实例化对象修改
+    count = 0
+
+
+a = A()
+print(a.count)
+print(A.count)
+a.count = 100
+A.count = 10
+print(a.count)
+print(A.count)
+```
+
+以上代码运行结果为：
+
+![image-20220224145717019](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224145717019.png)
+
+
+
+#### 实例属性
+
+实例属性，通过实例化对象添加的属性属于实例属性。实例属性只能通过实例对象来访问和修改，类对象无法访问修改。
+
+
+
+```python
+class B:
+    # 实例属性，通过实例化对象添加的属性属于实例属性
+    # 实例属性只能通过实例对象来访问和修改，类对象无法访问修改
+    def __init__(self):
+        self.name = '孙悟空'
+
+
+b = B()
+# print('B,', B.name)  # 报错
+print('b:', b.name)
+```
+
+以上代码运行结果为：
+
+![image-20220224150309652](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224150309652.png)
+
+
+
+
+
+#### 实例方法
+
+实例方法：在类中定义，以第一个参数的方法都是实例方法。实例方法在调用时，Python会将调用对象作为self传入。实例方法可以通过实例和类调用。当通过实例调用时，会自动将当前对象作为self传入。当通过类调用时，不会自动传递self，此时需要手动传递self。类调用方法时,需要手动传入实例化对象。
+
+```python
+class C:
+    # 实例方法：在类中定义，以第一个参数的方法都是实例方法
+    # 实例方法在调用时，Python会将调用对象作为self传入
+    # 实例方法可以通过实例和类调用。当通过实例调用时，会自动将当前对象作为self传入
+    # 当通过类调用时，不会自动传递self，此时需要手动传递self
+    def test(self):
+        print('这是test方法~~~')
+
+
+c = C()
+c.test()
+# 类调用方法时,需要手动传入实例化对象
+C.test(c)  # 等价于c.test()
+```
+
+以上代码运行结果为：
+
+![image-20220224155714396](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224155714396.png)
+
+
+
+#### 类方法
+
+在类内部使用 @classmethod 修饰的方法属于类方法。类方法的第一个参数是cls，也会被自动传递，cls就是当前的类对象。可以通过类和实例化对象调用。
+
+```python
+class D:
+    @classmethod
+    def test(cls):
+        print('这是一个类方法~~~')
+        print('类方法', cls)
+
+
+d = D()
+D.test()
+d.test()
+```
+
+以上代码运行结果为：
+
+![image-20220224180523505](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224180523505.png)
+
+
+
+
+
+#### 静态方法
+
+在类中使用@staticmethod 修饰的方法属于静态方法，静态方法不需要指定任何的默认参数，静态方法可以通过类和实例去调用，基本上是一个和当前类无关的方法，它只是**一个保存到当前类中的函数**。一般是一个工具方法。
+
+```python
+class E:
+    @staticmethod
+    def test():
+        print('这是一个静态方法~~~')
+
+
+e = E()
+E.test()
+e.test()
+```
+
+以上代码运行结果为：
+
+![image-20220224180558327](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220224180558327.png)
+
+
+
+
+
+
+
+### 垃圾回收
+
+就像生活中会产生垃圾一样，程序在运行过程中也会产生垃圾，程序运行过程中产生的垃圾会影响到程序的运行性能，所以这些垃圾必须及时清理。
+
+在程序中没有被引用的对象就是垃圾，这种垃圾对象过多以后会影响程序运行性能，因此必须进行及时的垃圾回收，所谓的垃圾回收就是将垃圾对象从内存中删除。
+
+在Python中有自动的垃圾回收机制，会自动将这些没有引用的对象删除，所以不用手动处理垃圾回收。
+
+
+
+#### \_\_del\_\_方法
+
+\_\_del\_\_是一个特殊方法，它会在对象被垃圾回收前调用。
+
+```python
+class A:
+    def __init__(self):
+        self.name = '孙悟空'
+
+    # __del__是一个特殊方法，它会在对象被垃圾回收前调用
+    def __del__(self):
+        print('A()对象被删除了')
+
+
+a = A()
+# b = a  # 如果此时又使用一个变量b，来引用a对应的对象，则A()被b引用，不是垃圾
+print(a.name)
+a = None  # 将a设置为了None，此时没有任何的变量对A（）对象进行引用，A（）变成了垃圾
+input('回车键退出...')  # 按下回车后程序运行结束，python会删除所有对象
+```
+
+以上代码运行结果为：
+
+![image-20220225115336977](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220225115336977.png)
+
+
+
+python会在程序执行结束时自动删除所有对象。
+
+```python
+class A:
+    def __init__(self):
+        self.name = '孙悟空'
+
+    # __del__是一个特殊方法，它会在对象被垃圾回收前调用
+    def __del__(self):
+        print('A()对象被删除了')
+
+
+a = A()
+# b = a  # 如果此时又使用一个变量b，来引用a对应的对象，则A()被b引用，不是垃圾
+print(a.name)
+# a = None  # 将a设置为了None，此时没有任何的变量对A（）对象进行引用，A（）变成了垃圾
+input('回车键退出...')  # 按下回车后程序运行结束，python会删除所有对象
+```
+
+以上代码运行结果为：
+
+![image-20220225135734400](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220225135734400.png)
+
+
+
+
+
+
+
+### 特殊方法
+
+特殊方法，也称为魔术方法，使用\_\_开头和结尾。一般不需要手动调用，在一些特殊情况下自动执行。
+
+#### \_\_str\_\_( )
+
+打印一个对象时，实际上打印的是对象中的特殊方法\_\_str\_\_()的返回值。\_\_str\_\_()这个特殊方法会在尝试将对象转换为字符串的时候调用。它的作用可以用来指定对象转换成字符串的结果。
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    # 使用__str__方法指定对象转换的结果
+    def __str__(self):
+        return 'Person: name%s, age%d' % (self.name, self.age)
+
+
+# 创建两个Person类的实例
+p1 = Person('孙悟空', 18)
+p2 = Person('猪八戒', 19)
+# 打印p1，实际上打印的是p1中的特殊方法__str__()的返回值
+print(p1)  # <__main__.Person object at 0x0000023EA1EB7240>
+print(p1)
+print(p2)
+```
+
+以上代码运行结果为：
+
+![image-20220225142845568](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220225142845568.png)
+
+
+
+
+
+\_\_repr\_\_( )
+
+这个特殊方法会在对当前对象使用repe（）函数时，调用，它的作用是指定对象在“交互模式”中直接输出的效果。
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+        # 使用__str__方法指定对象转换的结果
+    def __str__(self):
+        return 'Person: name%s, age%d' % (self.name, self.age)
+
+    def __repr__(self):
+        return 'hello'
+
+
+p1 = Person('孙悟空', 18)
+p2 = Person('猪八戒', 19)
+# 打印p1，实际上打印的是p1中的特殊方法__str__()的返回值
+print(str(p1)) 
+print(repr(p1))
+```
+
+以上代码运行结果为：
+
+![image-20220225162356423](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220225162356423.png)
+
+
+
+
+
+
+
+用于比较运算的方法
+
+```python
+# object.__lt__(self, other) 小于
+# object.__le__(self, other) 小于等于
+# object.__eq__(self, other) 等于
+# object.__ne__(self, other) 不等于
+# object.__gt__(self, other) 大于
+# object.__ge__(self, other) 大于等于
+```
+
+
+
+\_\_gt（）\_\_
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+        # 使用__gt__方法指定对象转换的结果,该方法的返回值会作为比较的结果
+        # 需要两个参数，一个self表示当前对象，other表示和当前对象比较的对象
+        # self > other
+    def __gt__(self, other):
+        return self.age > other.age
+
+
+p1 = Person('孙悟空', 18)
+p2 = Person('猪八戒', 19)
+print(p1 > p2)
+```
+
+以上代码运行结果为：
+
+![image-20220225172521070](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220225172521070.png)
+
+
+
+#### \_\_len（）\_\_ : 获取对象的长度
+
+#### object.\_\_bool（）\_\_
+
+object.\_\_bool（）\_\_ ：可以通过bool来指定对象转换为布尔值的情况
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+
+    def __bool__(self):
+        return self.age > 15
+
+
+p1 = Person('孙悟空', 18)
+p2 = Person('猪八戒', 19)
+print(bool(p1))
+```
+
+以上代码运行结果为：
+
+![image-20220225175854451](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220225175854451.png)
+
+
+
+
+
+
+
+## 模块（Moudle）
+
+### 模块化
+
+模块化指的是将一个完整的程序分解成为一个小的模块，通过将模块组合来搭建出一个完整的程序。
+
+如果不采用模块化，统一将所有的代码编写到一个文件中。而采用模块化将程序分别编写到多个文件中。
+
+模块化的优点：
+
+1. 方便分工开发
+2. 方便维护
+3. 模块可以复用
+
+
+
+
+
+
+
+### 模块的创建和引用
+
+#### 模块的创建
+
+在Python中一个py文件就是一个模块，要想创建模块实际上就是创建一个python文件。
+
+**注意：**模块名要符合标识符的规范。
+
+
+
+
+
+#### 模块的引用
+
+模块的引用（import）可以在程序的任意位置调用，但是一般情况下，import语句都会统一写在程序的开头。
+
+在每个模块内部都有一个\_\_name\_\_属性，通过这个属性可以获取到模块的名字。\_\_name\_\_属性值为\_main\_的模块是主模块[^25]，一个程序只会有一个主模块。
+
+```python
+print(__name__)  # __main__
+```
+
+在一个模块中引入外部模块的方式：
+
+1. import 模块名（python文件的名字，不要py）。
+
+可以引入同一个模块多次，但模块的实例只会创建一次。
+
+```python
+import test_module
+```
+
+2. import 模块名 as 模块名
+
+```python
+import test_module as test
+```
+
+
+
+
+
+[^25]: 主模块就是直接通过Python执行的模块，一般执行哪个模块哪个就是主模块
+
+
+
+
+
+
+
+### 包(Package)
+
+包也是一个模块，当模块中的代码过多时，或者一个模块需要被分解为多个模块时就需要使用到包。普通的模块就是一个py文件，而包是一个文件夹。
+
+包中必须有一个\_\_init\_\_.py文件，这个文件中可以包含有包的主要内容。
+
+![image-20220228010908575](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220228010908575.png)
+
+
+
+
+
+\_\_pycache\_\_是模块的缓存文件。在py代码执行前需要被解析器先转换为机器码再执行。因此在使用模块（包）时，也需要将模块的代码先转换为机器码再交友计算机执行。为了提高程序运行的性能，python会在编译过一次之后，将代码保存到一个缓存文件中（避免重复编译）。这样在下次加载这个模块（包）时，就可以不再重新编译而是直接加载缓存中编译好的代码即可。
+
+![image-20220228011537505](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220228011537505.png)
+
+![image-20220228011632472](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220228011632472.png)
+
+
+
+
+
+
+
+### Python标准库
+
+为了实现开箱即用的思想，Python中提供了一个模块的标准库。在这个标准库中，有很多强大的模块可以直接使用，并且标准库会随Python的安装一同安装。
+
+#### sys模块
+
+sys模块提供了一些变量和函数，使得用户可以获取到Python解析器的信息或者通过函数来操作Python解析器。常用属性：
+
+- sys.argv
+
+获取执行代码时，命令行中所包含的参数。该属性是一个列表，列表中保存了当前命令的所有参数。
+
+```python
+import sys
+print(sys.argv)
+```
+
+以上代码运行结果为：
+
+![image-20220228235826950](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220228235826950.png)
+
+
+
+- sys.modules
+
+获取当前程序中引入的所有模块，modules是一个字典，字典的key是模块的名字，value是模块对象。
+
+以上代码运行结果为：
+
+![image-20220228235947278](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220228235947278.png)
+
+
+
+
+
+
+
+
+
+
+
+#### pprint模块
+
+pprint模块提供了一个pprint（）方法可以用来对打印的数据做简单的格式化。
+
+```python
+import sys
+import pprint
+
+# print(sys.argv)
+pprint.pprint(sys.modules)
+```
+
+以上代码运行结果为：
+
+![image-20220301000236104](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220301000236104.png)
+
+以上代码运行结果为：
+
 
 
 以上代码运行结果为：
 
 以上代码运行结果为：
 
-
-
-[^19]: 会文字符串：字符串从前往后念和从后往前念是一样的，如abcba
