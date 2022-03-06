@@ -5785,11 +5785,315 @@ pprint.pprint(sys.modules)
 
 ![image-20220301000236104](C:\Users\25720\Desktop\py-learn-notes\learn-notes\image-20220301000236104.png)
 
+
+
+
+
+
+
+### 异常
+
+### 异常简介
+
+程序在运行过程中不可避免地会出现一些错误。比如：
+
+- 使用了没有复制的变量
+- 使用了不存在的索引
+- 除以0
+
+​	...
+
+这些错误在程序中称之为异常。程序运行过程中，一旦出现异常将会导致程序立即终止，异常以后的代码全部都不会执行。
+
+### 异常处理
+
+程序运行时出现异常，目的并不是让程序直接终止。Python希望在出现异常时，可以编写代码对异常进行处理。try语法：
+
+try：
+
+​		代码块（可能出现错误的语句）
+
+except:
+
+​		代码块（出现错误以后的处理方式）
+
+else:
+
+​		代码块（没出错时执行的语句）
+
+
+
+可以将可能出错的代码放入到try语句中，如果代码没有错误则会正常执行；如果出现错误，则会执行except子句中的代码。这样就可以通过代码来处理异常，避免因为一个异常导致整个程序的终止。、
+
+```python
+print('hello')
+try:
+    print(10 / 0)
+except:
+    print('哈哈哈，出错了~~~')
+else:
+    print('程序没错，正常运行')
+print('hello world')
+
+print('hello')
+
+# 无异常
+try:
+    print(10 / 2)
+except:
+    print('哈哈哈，出错了~~~')
+else:
+    print('程序没错，正常运行')
+print('hello world')
+```
+
 以上代码运行结果为：
 
 
 
-以上代码运行结果为：
+
+
+### 异常传播（抛出异常）
+
+当在函数中出现异常时，如果在函数中对异常进行了处理，则异常不会再继续传播，如果函数中没有对异常进行处理，则异常会继续向函数调用处传播。
+
+![image-20220303234910266](Python基础.assets/image-20220303234910266.png)
+
+
+
+如果函数调用处处理了异常则不再传播，如果没有处理则继续向调用处传播。直到传递到全局作用域（主模块）如果依然没有处理，则程序终止，并且显示异常信息。
+
+```python
+print('程序开始运行')
+
+
+def fn1():
+    print(10/0)
+
+
+def fn2():
+    fn1()
+
+
+def fn3():
+    fn2()
+
+
+fn3()
+```
 
 以上代码运行结果为：
+![image-20220303234715998](Python基础.assets/image-20220303234715998.png)
+     
+
+```python
+print('程序开始运行')
+
+
+def fn1():
+    try:
+        print(10/0)
+    except:
+        pass
+
+def fn2():
+    fn1()
+
+
+def fn3():
+    fn2()
+
+
+fn3()
+```
+
+以上代码运行结果为： 
+
+![image-20220303234815331](Python基础.assets/image-20220303234815331.png)
+
+
+		当程序运行过程中出现异常后，所有的异常信息会被保存到一个专门的异常对象中。而异常传播时，实际上就是异常对象抛给了调用处。比如：
+
+- ZeroDivisionError类的对象专门用来表示除以0的异常。
+
+- NameError类的对象专门用来处理变量错误的异常
+
+  ...
+  Python提供了多个异常对象。
+
+
+
+
+
+
+
+### 异常对象
+
+try语句中如果except后不跟任何内容，则此时会捕获到所有的异常。
+
+如果在except后跟着一个异常类型，此时只会捕获该类型的异常。
+
+Exception是所有异常类的父类，如果except后跟的是Exception，也会捕获到所有的异常对象，效果和不跟任何东西一致。
+
+```python
+print('异常出现前')
+e = []
+try:
+    print(b)
+    print(10 / 0)
+    print(e[10])
+except NameError:
+    print('这是一个NameError类型的异常')
+except ZeroDivisionError :
+    print('这是一个ZeroDivisionError类型的异常')
+except Exception:
+    print('未知异常')
+print('异常出现后')
+```
+
+
+
+可以在异常类后边跟一个as xx，此时xx就是异常对象。
+
+```python
+print('异常出现前')
+try:
+    print(b)
+except NameError as c:
+    print('这是一个NameError类型的异常', c, type(c))
+
+print('异常出现后')
+```
+
+以上代码运行结果为：
+
+![image-20220304002847125](Python基础.assets/image-20220304002847125.png)
+
+
+
+finally语句后的代码块无论是否出现异常都会执行。
+
+```python
+print('异常出现前')
+try:
+    print(b)
+except NameError as c:
+    print('这是一个NameError类型的异常', c, type(c))
+finally:
+    print('无论是否出现异常，该子句都会执行')
+print('异常出现后')
+```
+
+以上代码运行结果为：
+
+![image-20220304003324782](Python基础.assets/image-20220304003324782.png)
+
+
+
+try语句
+
+try：
+
+​		代码块（可能出现错误的语句）
+
+except 异常类型 as 异常名:
+
+​		代码块（出现错误以后的处理方式）
+
+except 异常类型 as 异常名:
+
+​		代码块（出现错误以后的处理方式）
+
+except 异常类型 as 异常名:
+
+​		代码块（出现错误以后的处理方式）
+
+else:
+
+​		代码块（没出错时执行的语句）
+
+finally：
+
+​		代码块（该代码块总会执行）
+
+
+
+
+
+
+
+### 自定义异常对象
+
+raise用于向外部抛出异常，后面可以跟一个异常类或异常类的实例。抛出异常的目的在于提示调用者，函数调用时出现问题及时处理。
+
+可以使用raise语句抛出异常。raise语句后需要跟一个异常类或异常的实例。
+
+```python
+def mul(a, b):
+    # 如果ab中有负数则向调用处抛出异常
+    if a < 0 or b < 0:
+        # 也可以使用if else处理，但if语句返回错误程度不及异常
+        # return None
+        raise Exception('两个参数不能有负数')
+    return a * b
+
+
+print(mul(-123, 12))
+```
+
+以上代码运行结果为：
+
+![image-20220306134205086](Python基础.assets/image-20220306134205086.png)
+
+
+
+也可以自定义异常类，只需要创建一个类继承Exception即可。
+
+```python
+def oneerror(Exception):
+    pass
+
+
+def mul(a, b):
+    if a < 0 or b < 0:
+        raise oneerror('这是一个异常')
+    return a * b
+
+
+print(mul(-123, 12))
+```
+
+以上代码运行结果为：
+
+![image-20220306140808736](Python基础.assets/image-20220306140808736.png)
+
+
+
+
+
+
+
+## 文件(File)
+
+除了手动操作的方式，还可以通过Python对计算机中的各种文件进行增删改查的操作。
+
+I/O:对文件的操作在其他语言中也称为I/O(Input/Output).I/O是从人的角度出发，Input：人从计算机中读取文件内容；Output：人向计算机文件中输出内容。
+
+
+
+### 打开文件
+
+使用open函数来打开一个文件。参数：file 要打开的文件名称（路径）；返回值：返回一个对象，这个对象代表了当前打开的文件。
+
+
+
+
+
+
+
+
+
+
+
+
 
