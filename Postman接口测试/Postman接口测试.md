@@ -549,5 +549,158 @@ postman鉴权的方式：postman会在第一次访问服务器的时候自动保
 
 
 
-Postman是专为接口测试而生，Newman是专为Postman而生。
+Postman是专为接口测试而生的，newman是专为postman而生的。newman可以让postman脚本通过非GUI（图形用户界面），即命令行的方式运行。Newman 可以方便地运行和测试集合，并用之构造接口自动化测试和持续集成。
+
+
+
+### newman安装
+
+
+
+1. 先安装node.js，下载地址：https://nodejs.org/en/  ，双击后根据提示下一步安装完成
+2. 验证node，npm安装，命令行分别输入：node -v ，npm -v
+3. 输入命令安装newman： npm install -g newman 进行安装，然后 newman -v 检查
+4. 生成html报告要先安装html套件，命令行执行： npm install -g newman-reporter-html
+5. 使用htmlextra套件可以生成比较高级的html报告，使用方法和html相同，需要安装htmlextrea，命令行输入npm install -g newman-reporter-htmlextra
+6. 把postman脚本通过集合导出，包括环境变量、全局变量和驱动数据都可以导出，保存成Json格式
+
+
+
+### Postman+Newman的使用
+
+
+
+运行命令：newman run
+
+常用参数：
+
+-e 引用环境变量(跟环境变量文件,如： -e enviroment.json)
+
+-g 引用全局变量(跟全局变量文件,如： -g global.json)
+
+-d 引用数据文件（跟驱动数据文件,如：-d data.json）
+
+-n 指定测试用例迭代的次数
+
+-r cli,html,json,junit --reporter-html-export 指定生成html报告（跟生成报告文件,如：-r cli,html,json,junit --reporter-html-export report.html）
+
+-r cli,html,json,junit --reporter-json-export 指定生成json报告
+
+-r cli,html,json,junit --reporter-junit-export 指定生成junit报告
+
+-r cli,html,json,junit --reporter-cli-export 指定生成cli报告
+
+（默认生成的报告保存在当前目录下，如果文件名前加上路径，则保存在指定的目录下）
+
+命令行（当前文件夹）：newman run testcase.json -e enviroment.json -g global.json -d data.json -n 10 -r cli,html,json,junit --reporter-html-export report.html
+
+![截图](Postman接口测试.assets/截图-16499399804492.png)
+
+
+
+
+
+
+
+
+
+## Postman+Newman+Jenkins持续集成
+
+
+
+postman基于JavaScript语言，postman的脚本（json文档）运行依赖于newman环境，而newman环境依赖于JavaScript的环境nodejs。
+
+jenkins只支持windows命令行和Linux shell环境执行构建命令，postman的脚本不能直接在windows命令行和shell环境执行，需要依赖于newman环境，而newman环境依赖于JavaScript的环境nodejs。因此，整个过程是先搭建nodejs构造JavaScript环境，再搭建newman环境构建postman脚本运行环境，最后集成到Jenkins上。
+
+
+
+### Jenkins安装步骤
+
+
+
+1.安装Tomcat，下载地址：https://tomcat.apache.org/download-90.cgi
+
+2.安装Jenkins，将Jenkins安装在Tomcat的webapps目录下。Jenkins官方网站：https://jenkins.io/
+
+3.Jenkins安装完成后，等待安装主流插件。
+
+4.jenkins安裝成功后，本地浏览器输入：http://localhost:8080
+
+5.用户账号设置，默认是admin，账号密码根据提示在安装路径的initialAdminPassword文件中可找到，如安装路径E:\Jenkins2.150.1\secrets\initialAdminPassword即可找到；也可自己设置账号密码。
+
+6.插件配置：JDK、Git、Maven等
+
+
+
+### Postman+Newman+Jenkins
+
+
+
+Jenkins服务器开启停止命令：
+
+（1）停止:net stop jenkins
+
+（2）启动:net start Jenkins
+
+
+
+1. 新建一个项目
+
+2. 设置Freestyle project（自定义工作空间）
+
+配置》》高级》》使用自定义的工作空间，选择脚本文件夹路径作为工作目录
+
+
+
+![截图2](Postman接口测试.assets/截图2-16499400855953.png)
+
+
+
+3. 【构建】选择Execute Windows batch command（执行windows的批处理命令）
+
+
+
+![截图3](Postman接口测试.assets/截图3-16499401188214.png)
+
+
+
+输入Newman中的运行json文档命令、生成报告的命令:
+
+
+
+![截图4](Postman接口测试.assets/截图4.png)
+
+
+
+4. 执行系统的Groovy脚本
+
+默认情况下查看Jenkins中html报告的样式会丢失，执行Groovy脚本后可以保证样式不丢失。
+
+
+
+![截图5](Postman接口测试.assets/截图5-16499401782855.png)
+
+
+
+增加构建后的操作
+
+
+
+![截图6](Postman接口测试.assets/截图6-16499401948026.png)
+
+
+
+5. 生成的HTML报告集成到Jenkins
+
+
+
+![截图7](Postman接口测试.assets/截图7-16499402123677.png)
+
+
+
+运行
+
+
+
+![截图8](Postman接口测试.assets/截图8-16499402716219.png)
 
